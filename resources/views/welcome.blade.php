@@ -10,7 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/bootstrap/favicon.ico') }}">
 
-    <title>Fixed Top Navbar Example for Bootstrap</title>
+    <title>Laravel - Ajax</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -55,7 +55,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
             <li class="dropdown">
@@ -104,6 +104,7 @@
             </div>
         </div>
       </div>
+      @include('form')
 
     </div> <!-- /container -->
 
@@ -123,37 +124,67 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{{ asset('assets/bootstrap/js/ie10-viewport-bug-workaround.js') }}"></script>
     <script>
-      var table = $('#contact-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('ABC') }}",
-                columns: [
-                  {data: 'id'},
-                  {data: 'name'},
-                  {data: 'email'},
-                  {data: 'action', name: 'action', orderable: false, searchable: false}
-                ],
-                language: {
-                  "decimal": "",
-                  "emptyTable": "No hay información",
-                  "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                  "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-                  "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-                  "infoPostFix": "",
-                  "thousands": ",",
-                  "lengthMenu": "Mostrar _MENU_ Entradas",
-                  "loadingRecords": "Cargando...",
-                  "processing": "Procesando...",
-                  "search": "Buscar:",
-                  "zeroRecords": "Sin resultados encontrados",
-                  "paginate": {
-                    "first": "Primero",
-                    "last": "Ultimo",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                  }
+    var table = $('#contact-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('contact/apiContact') }}",
+                    columns: [
+                      {data: 'id', name: 'id'},
+                      {data: 'name', name: 'name'},
+                      {data: 'email', name: 'email'},
+                      {data: 'action', name: 'action', orderable: false, searchable: false}
+              ],
+              language: {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                  "first": "Primero",
+                  "last": "Ultimo",
+                  "next": "Siguiente",
+                  "previous": "Anterior"
                 }
-              });
+              }
+  });
+  function addForm() {
+      save_method = "add";
+      $('input[name=_method]').val('POST');
+      $('#modal-form').modal('show');
+      $('#modal-form form')[0].reset();
+      $('.modal-title').text('Añadir Contacto');
+  }
+
+  $(function(){
+            $('#modal-form form').validator().on('submit', function (e) {
+                if (!e.isDefaultPrevented()){
+                    var id = $('#id').val();
+                    if (save_method == 'add') url = "{{ url('contact') }}";
+                    else url = "{{ url('contact') . '/' }}" + id;
+                    $.ajax({
+                        url : url,
+                        type : "POST",
+                        data: $("#modal-form form").serialize(),
+                        success : function($data) {
+                            $('#modal-form').modal('hide');
+                            table.ajax.reload();
+                        },
+                        error : function(){
+                          alert('Ocurrio un error');
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
     </script>
   </body>
 </html>
