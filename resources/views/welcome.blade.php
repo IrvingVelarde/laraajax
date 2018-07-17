@@ -163,28 +163,97 @@
       $('.modal-title').text('Añadir Contacto');
   }
 
-  $(function(){
-            $('#modal-form form').validator().on('submit', function (e) {
-                if (!e.isDefaultPrevented()){
-                    var id = $('#id').val();
-                    if (save_method == 'add') url = "{{ url('contact') }}";
-                    else url = "{{ url('contact') . '/' }}" + id;
-                    $.ajax({
-                        url : url,
-                        type : "POST",
-                        data: $("#modal-form form").serialize(),
-                        success : function($data) {
-                            $('#modal-form').modal('hide');
-                            table.ajax.reload();
-                        },
-                        error : function(){
-                          alert('Ocurrio un error');
-                        }
-                    });
-                    return false;
-                }
-            });
+    function editForm(id) {
+        save_method = 'edit';
+        $('input[name=_method]').val('PATCH');
+        $('#modal-form form')[0].reset();
+        $.ajax({
+          url: "{{ url('contact') }}" + '/' + id + "/edit",
+          type: "GET",
+          dataType: "JSON",
+          success: function(data) {
+            $('#modal-form').modal('show');
+            $('.modal-title').text('Editar Contacto');
+            $('#id').val(data.id);
+            $('#name').val(data.name);
+            $('#email').val(data.email);
+          },
+          error : function() {
+              alert("Ningun dato");
+          }
         });
-    </script>
+      }
+
+  function deleteData(id){
+          var csrf_token = $('meta[name="csrf-token"]').attr('content');
+          swal({
+              title: 'Esta seguro?',
+              text: "No podrás revertir esto!",
+              type: 'warning',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+              cancelButtonText: 'Cancel',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'Aceptar'
+          }).then(function () {
+              $.ajax({
+                  url : "{{ url('contact') }}" + '/' + id,
+                  type : "POST",
+                  data : {'_method' : 'DELETE', '_token' : csrf_token},
+                  success : function(data) {
+                      table.ajax.reload();
+                      swal({
+                          title: 'Se ha eliminado correctamente',
+                          text: data.message,
+                          type: 'success',
+                          timer: 1500
+                      }).catch(swal.noop);
+                  },
+                  error : function () {
+                      swal({
+                          title: 'Oops...',
+                          text: data.message,
+                          type: 'error',
+                          timer: 1500
+                      }).catch(swal.noop);
+                  }
+              });
+          });
+        }
+
+  $(function(){
+      $('#modal-form form').validator().on('submit', function (e) {
+          if (!e.isDefaultPrevented()){
+              var id = $('#id').val();
+              if (save_method == 'add') url = "{{ url('contact') }}";
+              else url = "{{ url('contact') . '/' }}" + id;
+              $.ajax({
+                  url : url,
+                  type : "POST",
+                  data: $("#modal-form form").serialize(),
+                  success : function($data) {
+                      $('#modal-form').modal('hide');
+                      table.ajax.reload();
+                        swal({
+                            title: 'Registrado!',
+                            text:  'Contacto creado correctamente',
+                            type:  'success',
+                            timer: 1500
+                        }).catch(swal.noop);
+                  },
+                  error : function(){
+                      swal({
+                          title: 'Oops...',
+                          text: 'Contacto NO se ha creado correctamente',
+                          type: 'error',
+                          timer: 1500
+                      }).catch(swal.noop);
+                  }
+              });
+              return false;
+          }
+      });
+  });
+        </script>
   </body>
 </html>

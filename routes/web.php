@@ -17,7 +17,6 @@ Route::get('/', function () {
 
 
 
-Route::get('mensaje','ContactController@hola');
-
 Route::get('contact/apiContact','ContactController@apiContact')->name('contact/apiContact');
 Route::resource('contact','ContactController');
+

@@ -62,7 +62,8 @@ class ContactController extends Controller
      */
     public function edit($id)
     {
-        //
+        $contact = Contact::find($id);
+        return $contact;
     }
 
     /**
@@ -74,7 +75,11 @@ class ContactController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $contact = Contact::find($id);
+        $contact->name  = $request['name'];
+        $contact->email = $request['email'];
+        $contact->update();
+        return $contact;
     }
 
     /**
@@ -85,7 +90,7 @@ class ContactController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Contact::destroy($id);
     }
     public function apiContact()
     {
@@ -97,9 +102,5 @@ class ContactController extends Controller
                        '<a onclick="editForm('. $contact->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Editar</a> ' .
                        '<a onclick="deleteData('. $contact->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Eliminar</a>';
             })->make(true);
-    }
-    public function hola()
-    {
-        echo "Hola como están amiguitos :)";
     }
 }
