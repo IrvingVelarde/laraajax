@@ -11,6 +11,8 @@
     <link rel="icon" href="{{ asset('assets/bootstrap/favicon.ico') }}">
 
     <title>Laravel - Ajax</title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+
 
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -85,8 +87,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4>Lista de Contactos
-                        <a onclick="addForm()" class="btn btn-primary pull-right" style="margin-top: -8px;">Añadir Contacto</a>
-                    </h4>
+                        <a onclick="addForm()" class="btn btn-primary pull-right" style="margin-top: -8px;">Añadir Contacto</a>                  
+                      <a href="{{ URL::route('/exportpdf') }}" class="btn btn-danger"target="_blank"><i class="far fa-file-pdf"> PDF</i></a>
+                    </h4>  
                 </div>
                 <div class="panel-body">
                     <table id="contact-table" class="table table-striped">
@@ -95,6 +98,7 @@
                                 <th width="30">No</th>
                                 <th>Nombre</th>
                                 <th>Email</th>
+                                <th>Foto</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -132,6 +136,7 @@
                       {data: 'id', name: 'id'},
                       {data: 'name', name: 'name'},
                       {data: 'email', name: 'email'},
+                      {data: 'show_photo', name: 'show_photo'},
                       {data: 'action', name: 'action', orderable: false, searchable: false}
               ],
               language: {
@@ -163,26 +168,26 @@
       $('.modal-title').text('Añadir Contacto');
   }
 
-    function editForm(id) {
-        save_method = 'edit';
-        $('input[name=_method]').val('PATCH');
-        $('#modal-form form')[0].reset();
-        $.ajax({
-          url: "{{ url('contact') }}" + '/' + id + "/edit",
-          type: "GET",
-          dataType: "JSON",
-          success: function(data) {
-            $('#modal-form').modal('show');
-            $('.modal-title').text('Editar Contacto');
-            $('#id').val(data.id);
-            $('#name').val(data.name);
-            $('#email').val(data.email);
-          },
-          error : function() {
-              alert("Ningun dato");
-          }
-        });
-      }
+  function editForm(id) {
+      save_method = 'edit';
+      $('input[name=_method]').val('PATCH');
+      $('#modal-form form')[0].reset();
+      $.ajax({
+        url: "{{ url('contact') }}" + '/' + id + "/edit",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          $('#modal-form').modal('show');
+          $('.modal-title').text('Editar Contacto');
+          $('#id').val(data.id);
+          $('#name').val(data.name);
+          $('#email').val(data.email);
+        },
+        error : function() {
+            alert("Ningun dato");
+        }
+      });
+    }
 
   function deleteData(id){
           var csrf_token = $('meta[name="csrf-token"]').attr('content');
@@ -221,7 +226,7 @@
           });
         }
 
-  $(function(){
+   $(function(){
       $('#modal-form form').validator().on('submit', function (e) {
           if (!e.isDefaultPrevented()){
               var id = $('#id').val();
@@ -230,21 +235,24 @@
               $.ajax({
                   url : url,
                   type : "POST",
-                  data: $("#modal-form form").serialize(),
-                  success : function($data) {
+                  //data: $("#modal-form form").serialize(),
+                  data: new FormData($("#modal-form form")[0]),
+                  contentType: false,
+                  processData: false,
+                  success : function(data) {
                       $('#modal-form').modal('hide');
                       table.ajax.reload();
                         swal({
                             title: 'Registrado!',
-                            text:  'Contacto creado correctamente',
+                            text: data.message,
                             type:  'success',
                             timer: 1500
                         }).catch(swal.noop);
                   },
-                  error : function(){
+                  error : function(data){
                       swal({
                           title: 'Oops...',
-                          text: 'Contacto NO se ha creado correctamente',
+                          text: data.message,
                           type: 'error',
                           timer: 1500
                       }).catch(swal.noop);
@@ -254,6 +262,6 @@
           }
       });
   });
-        </script>
+  </script>
   </body>
 </html>

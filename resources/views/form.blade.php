@@ -27,11 +27,18 @@
                           <span class="help-block with-errors"></span>
                       </div>
                     </div>
+                    <div class="form-group">
+                        <label for="photo" class="col-md-3 control-label">Foto</label>
+                        <div class="col-md-6">
+                            <input type="file" id="photo" name="photo" class="form-control">
+                            <span class="help-block with-errors"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success btn-save">Guardar</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
 
             </form>
