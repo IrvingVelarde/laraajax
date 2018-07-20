@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Contact;
 use Barryvdh\DomPDF\Facade as PDF;
+use App\Exports\ContactsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ContactController extends Controller
 {
@@ -154,5 +156,23 @@ class ContactController extends Controller
         return $pdf->stream('my_report_contacts.pdf');
         //return $pdf->download('my_report_contacts.pdf');
         //return view('pdf',compact('contacts'));
+    }
+    
+    public function exportEXCEL(){
+        /* VERSION 2.* de EXPORTAR A EXCEL 
+        $contact = Contact::select('name','email')->get();
+        return Excel::create('Laravel_Excel', function($excel) use ($contact){
+            $excel->sheet('mysheet',function($sheet) use ($contact){               
+                    $sheet->fromArray($contact);
+            });
+        })->download('xls'); */
+
+        /* $contact = Contact::select('id', 'name', 'email', 'created_at')->get();
+        Excel::create('contact', function($excel) use($contact) {
+            $excel->sheet('Sheet 1', function($sheet) use($contact) {
+                $sheet->fromArray($contact);
+            });
+        })->download('xls'); */
+        return Excel::download(new ContactsExport, 'contacts.xlsx');
     }
 }

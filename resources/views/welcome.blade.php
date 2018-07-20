@@ -89,6 +89,7 @@
                     <h4>Lista de Contactos
                         <a onclick="addForm()" class="btn btn-primary pull-right" style="margin-top: -8px;">Añadir Contacto</a>                  
                       <a href="{{ URL::route('/exportpdf') }}" class="btn btn-danger"target="_blank"><i class="far fa-file-pdf"> PDF</i></a>
+                      <a href="{{ URL::route('/exportexcel') }}" class="btn btn-success"><i class="far fa-file-excel"> EXCEL</i></a>
                     </h4>  
                 </div>
                 <div class="panel-body">
